@@ -12,6 +12,11 @@ from src.ingestion import get_chroma_collection  # noqa: E402
 
 load_dotenv()
 
+# Pre-load embedding model and ChromaDB at startup to avoid timeout on first request
+from src.ingestion import get_embedding_model  # noqa: E402
+
+get_embedding_model()
+
 app = Flask(
     __name__,
     template_folder="../templates",

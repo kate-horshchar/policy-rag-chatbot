@@ -8,15 +8,16 @@ load_dotenv()
 TOP_K = int(os.getenv("TOP_K", 5))
 MMR_LAMBDA = float(os.getenv("MMR_LAMBDA", 0.7))
 
-# BGE instruction prefix — improves retrieval quality for this model
 BGE_QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
 
 
 def embed_query(query: str) -> list[float]:
-    """Embed a user query with the BGE instruction prefix."""
+    """Embed a user query."""
     model = get_embedding_model()
-    prefixed = BGE_QUERY_PREFIX + query
-    embedding = model.encode(prefixed, normalize_embeddings=True)
+    embedding_model = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    if "bge" in embedding_model.lower():
+        query = BGE_QUERY_PREFIX + query
+    embedding = model.encode(query, normalize_embeddings=True)
     return embedding.tolist()
 
 
