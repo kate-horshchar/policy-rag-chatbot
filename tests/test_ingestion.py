@@ -1,6 +1,4 @@
-import pytest
 from src.ingestion import chunk_text, extract_section_title, load_markdown
-from pathlib import Path
 
 
 def test_chunk_text_basic():
@@ -26,7 +24,6 @@ def test_chunk_text_empty():
 
 def test_extract_section_title_found():
     text = "## Introduction\nSome text here.\n## Section Two\nMore text."
-    # offset after "Section Two"
     offset = text.index("More text")
     title = extract_section_title(text, offset)
     assert title == "Section Two"

@@ -4,11 +4,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from flask import Flask, request, jsonify, render_template
-from dotenv import load_dotenv
+from flask import Flask, request, jsonify, render_template  # noqa: E402
+from dotenv import load_dotenv  # noqa: E402
 
-from src.pipeline import ask
-from src.ingestion import get_chroma_collection
+from src.pipeline import ask  # noqa: E402
+from src.ingestion import get_chroma_collection  # noqa: E402
 
 load_dotenv()
 

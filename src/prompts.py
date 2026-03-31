@@ -8,7 +8,8 @@ Rules you must follow:
   "I don't have enough information in the current policies to answer that. Please contact People Operations at people@sunshineconsulting.com or via Slack #hr-help."
 - Do not make up policies, numbers, or procedures.
 - Be concise and direct. Avoid unnecessary filler.
-- If multiple documents are relevant, cite all of them."""
+- If multiple documents are relevant, cite all of them.
+"""
 
 
 def build_context(chunks: list[dict]) -> str:

@@ -1,7 +1,4 @@
 import os
-from typing import Optional
-
-import chromadb
 from dotenv import load_dotenv
 
 from src.ingestion import get_embedding_model, get_chroma_collection

@@ -17,11 +17,11 @@ import time
 from pathlib import Path
 from datetime import datetime
 
-import numpy as np
+import numpy as np  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from src.pipeline import ask
+from src.pipeline import ask  # noqa: E402
 
 QA_PAIRS_PATH = Path(__file__).parent / "qa_pairs.json"
 RESULTS_DIR = Path(__file__).parent / "results"
@@ -136,9 +136,8 @@ def run_evaluation():
         results.append(record)
 
         status = "✓" if grounded else "✗"
-        print(
-            f"         {status} grounded | {latency_ms}ms | sources: {[s['source'] for s in sources[:2]]}"
-        )
+        src_list = [s["source"] for s in sources[:2]]
+        print(f"         {status} grounded | {latency_ms}ms | sources: {src_list}")
 
         if i < len(qa_pairs):
             time.sleep(SLEEP_BETWEEN_REQUESTS)
@@ -190,9 +189,8 @@ def run_evaluation():
     print(
         f"Citation Accuracy: {citation_pct}%  ({citation_correct_count}/{citation_total})"
     )
-    print(
-        f"Fallback Rate:     {fallback_rate}%  ({fallback_correct}/{fallback_total} unanswerable correctly refused)"
-    )
+    refused = f"{fallback_correct}/{fallback_total} unanswerable correctly refused"
+    print(f"Fallback Rate:     {fallback_rate}%  ({refused})")
     print(f"Latency p50:       {p50}ms")
     print(f"Latency p95:       {p95}ms")
     print("=" * 60)
