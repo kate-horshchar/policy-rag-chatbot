@@ -4,7 +4,7 @@ services:
     env: python
     plan: free
     buildCommand: pip install -r requirements.txt && python scripts/build_index.py
-    startCommand: gunicorn app.web:app --bind "0.0.0.0:${PORT:-10000}" --timeout 120 --workers 1
+    startCommand: gunicorn app.web:app --bind "0.0.0.0:${PORT:-10000}" --timeout 300 --workers 1
     envVars:
       - key: GROQ_API_KEY
         sync: false
