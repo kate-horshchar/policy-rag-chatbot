@@ -30,11 +30,16 @@ def health():
         index_size = 0
         status = f"degraded: {str(e)}"
 
-    return jsonify({
-        "status": status,
-        "index_size": index_size,
-        "model": os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
-    }), 200
+    return (
+        jsonify(
+            {
+                "status": status,
+                "index_size": index_size,
+                "model": os.getenv("GROQ_MODEL", "llama-3.1-8b-instant"),
+            }
+        ),
+        200,
+    )
 
 
 @app.route("/", methods=["GET"])
@@ -59,11 +64,16 @@ def chat():
     if result.get("error") and not result.get("answer"):
         return jsonify({"error": result["error"]}), 500
 
-    return jsonify({
-        "answer": result["answer"],
-        "sources": result["sources"],
-        "latency_ms": result["latency_ms"],
-    }), 200
+    return (
+        jsonify(
+            {
+                "answer": result["answer"],
+                "sources": result["sources"],
+                "latency_ms": result["latency_ms"],
+            }
+        ),
+        200,
+    )
 
 
 if __name__ == "__main__":

@@ -40,7 +40,11 @@ def is_grounded(answer: str, sources: list[dict], expected: str) -> bool:
     """
     expected_lower = expected.lower()
     # Extract key terms: numbers and words longer than 3 chars
-    key_terms = [w for w in expected_lower.split() if len(w) > 3 or w.replace("$", "").replace("%", "").isdigit()]
+    key_terms = [
+        w
+        for w in expected_lower.split()
+        if len(w) > 3 or w.replace("$", "").replace("%", "").isdigit()
+    ]
 
     if not key_terms:
         return False
@@ -132,7 +136,9 @@ def run_evaluation():
         results.append(record)
 
         status = "✓" if grounded else "✗"
-        print(f"         {status} grounded | {latency_ms}ms | sources: {[s['source'] for s in sources[:2]]}")
+        print(
+            f"         {status} grounded | {latency_ms}ms | sources: {[s['source'] for s in sources[:2]]}"
+        )
 
         if i < len(qa_pairs):
             time.sleep(SLEEP_BETWEEN_REQUESTS)
@@ -142,8 +148,12 @@ def run_evaluation():
     # Calculate metrics
     total = len(qa_pairs)
     groundedness_pct = round(grounded_count / total * 100, 1)
-    citation_pct = round(citation_correct_count / citation_total * 100, 1) if citation_total else 0
-    fallback_rate = round(fallback_correct / fallback_total * 100, 1) if fallback_total else 0
+    citation_pct = (
+        round(citation_correct_count / citation_total * 100, 1) if citation_total else 0
+    )
+    fallback_rate = (
+        round(fallback_correct / fallback_total * 100, 1) if fallback_total else 0
+    )
     p50 = int(np.percentile(latencies, 50))
     p95 = int(np.percentile(latencies, 95))
 
@@ -177,8 +187,12 @@ def run_evaluation():
     print("\nEVALUATION SUMMARY")
     print("=" * 60)
     print(f"Groundedness:      {groundedness_pct}%  ({grounded_count}/{total})")
-    print(f"Citation Accuracy: {citation_pct}%  ({citation_correct_count}/{citation_total})")
-    print(f"Fallback Rate:     {fallback_rate}%  ({fallback_correct}/{fallback_total} unanswerable correctly refused)")
+    print(
+        f"Citation Accuracy: {citation_pct}%  ({citation_correct_count}/{citation_total})"
+    )
+    print(
+        f"Fallback Rate:     {fallback_rate}%  ({fallback_correct}/{fallback_total} unanswerable correctly refused)"
+    )
     print(f"Latency p50:       {p50}ms")
     print(f"Latency p95:       {p95}ms")
     print("=" * 60)

@@ -8,6 +8,7 @@ def test_embed_query_adds_prefix():
     with patch("src.retrieval.get_embedding_model") as mock_model:
         mock_instance = MagicMock()
         import numpy as np
+
         mock_instance.encode.return_value = np.array([0.1] * 384)
         mock_model.return_value = mock_instance
 

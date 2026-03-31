@@ -21,9 +21,7 @@ def build_context(chunks: list[dict]) -> str:
         source = chunk.get("source", "unknown")
         section = chunk.get("section_title", "General")
         text = chunk.get("text", "")
-        parts.append(
-            f"[Excerpt {i} from {source}, Section: {section}]\n{text}"
-        )
+        parts.append(f"[Excerpt {i} from {source}, Section: {section}]\n{text}")
 
     return "\n\n---\n\n".join(parts)
 

@@ -85,7 +85,11 @@ def ask(question: str) -> dict:
         {
             "source": chunk["source"],
             "section_title": chunk["section_title"],
-            "snippet": chunk["text"][:200] + "..." if len(chunk["text"]) > 200 else chunk["text"],
+            "snippet": (
+                chunk["text"][:200] + "..."
+                if len(chunk["text"]) > 200
+                else chunk["text"]
+            ),
         }
         for chunk in chunks
     ]

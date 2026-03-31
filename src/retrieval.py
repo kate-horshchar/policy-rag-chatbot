@@ -43,12 +43,14 @@ def retrieve(query: str, k: int = TOP_K) -> list[dict]:
     distances = results.get("distances", [[]])[0]
 
     for doc, meta, dist in zip(documents, metadatas, distances):
-        chunks.append({
-            "text": doc,
-            "source": meta.get("source", "unknown"),
-            "section_title": meta.get("section_title", "General"),
-            "distance": round(dist, 4),
-        })
+        chunks.append(
+            {
+                "text": doc,
+                "source": meta.get("source", "unknown"),
+                "section_title": meta.get("section_title", "General"),
+                "distance": round(dist, 4),
+            }
+        )
 
     return chunks
 

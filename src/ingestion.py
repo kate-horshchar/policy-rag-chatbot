@@ -35,6 +35,7 @@ def get_chroma_collection() -> chromadb.Collection:
 
 # --- Document loaders ---
 
+
 def load_markdown(file_path: Path) -> str:
     return file_path.read_text(encoding="utf-8")
 
@@ -45,12 +46,14 @@ def load_txt(file_path: Path) -> str:
 
 def load_pdf(file_path: Path) -> str:
     from pypdf import PdfReader
+
     reader = PdfReader(str(file_path))
     return "\n".join(page.extract_text() or "" for page in reader.pages)
 
 
 def load_html(file_path: Path) -> str:
     from bs4 import BeautifulSoup
+
     html = file_path.read_text(encoding="utf-8")
     soup = BeautifulSoup(html, "lxml")
     return soup.get_text(separator="\n")
@@ -72,6 +75,7 @@ def load_document(file_path: Path) -> str:
 
 # --- Metadata extraction ---
 
+
 def extract_section_title(text: str, char_offset: int) -> str:
     """Find the last markdown heading before char_offset."""
     snippet = text[:char_offset]
@@ -85,7 +89,10 @@ def extract_section_title(text: str, char_offset: int) -> str:
 
 # --- Chunking ---
 
-def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP) -> list[dict]:
+
+def chunk_text(
+    text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVERLAP
+) -> list[dict]:
     """
     Recursively split text by separators, return list of
     {"text": ..., "char_offset": ...}
@@ -96,7 +103,14 @@ def chunk_text(text: str, chunk_size: int = CHUNK_SIZE, overlap: int = CHUNK_OVE
     return chunks
 
 
-def _recursive_split(text: str, separators: list[str], chunk_size: int, overlap: int, base_offset: int, result: list):
+def _recursive_split(
+    text: str,
+    separators: list[str],
+    chunk_size: int,
+    overlap: int,
+    base_offset: int,
+    result: list,
+):
     if len(text) <= chunk_size:
         if text.strip():
             result.append({"text": text.strip(), "char_offset": base_offset})
@@ -116,9 +130,18 @@ def _recursive_split(text: str, separators: list[str], chunk_size: int, overlap:
         else:
             if current.strip():
                 if len(current) > chunk_size and remaining_seps:
-                    _recursive_split(current, remaining_seps, chunk_size, overlap, current_offset, result)
+                    _recursive_split(
+                        current,
+                        remaining_seps,
+                        chunk_size,
+                        overlap,
+                        current_offset,
+                        result,
+                    )
                 else:
-                    result.append({"text": current.strip(), "char_offset": current_offset})
+                    result.append(
+                        {"text": current.strip(), "char_offset": current_offset}
+                    )
             # overlap: carry last `overlap` chars into next chunk
             overlap_text = current[-overlap:] if len(current) > overlap else current
             current_offset = base_offset + text.find(part)
@@ -126,12 +149,15 @@ def _recursive_split(text: str, separators: list[str], chunk_size: int, overlap:
 
     if current.strip():
         if len(current) > chunk_size and remaining_seps:
-            _recursive_split(current, remaining_seps, chunk_size, overlap, current_offset, result)
+            _recursive_split(
+                current, remaining_seps, chunk_size, overlap, current_offset, result
+            )
         else:
             result.append({"text": current.strip(), "char_offset": current_offset})
 
 
 # --- Embedding ---
+
 
 def embed_documents(texts: list[str]) -> list[list[float]]:
     model = get_embedding_model()
@@ -140,6 +166,7 @@ def embed_documents(texts: list[str]) -> list[list[float]]:
 
 
 # --- Main ingestion ---
+
 
 def ingest_file(file_path: Path, collection: chromadb.Collection) -> int:
     """Ingest a single file into ChromaDB. Returns number of chunks added."""
@@ -158,11 +185,13 @@ def ingest_file(file_path: Path, collection: chromadb.Collection) -> int:
         chunk_id = hashlib.md5(f"{source_name}:{chunk_text_val}".encode()).hexdigest()
 
         texts.append(chunk_text_val)
-        metadatas.append({
-            "source": source_name,
-            "section_title": section_title,
-            "char_offset": char_offset,
-        })
+        metadatas.append(
+            {
+                "source": source_name,
+                "section_title": section_title,
+                "char_offset": char_offset,
+            }
+        )
         ids.append(chunk_id)
 
     if not texts:
