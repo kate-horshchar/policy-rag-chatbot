@@ -1,0 +1,177 @@
+[
+  {
+    "id": "pto-001",
+    "question": "How many days of PTO do I accrue per month?",
+    "expected_answer": "1.5 days per month",
+    "source_document": "pto_policy.md",
+    "category": "factual"
+  },
+  {
+    "id": "pto-002",
+    "question": "How many unused PTO days can I carry over to the next year?",
+    "expected_answer": "10 days",
+    "source_document": "pto_policy.md",
+    "category": "factual"
+  },
+  {
+    "id": "pto-003",
+    "question": "How many sick leave days do I get per year?",
+    "expected_answer": "10 days",
+    "source_document": "pto_policy.md",
+    "category": "factual"
+  },
+  {
+    "id": "expense-001",
+    "question": "What is the daily meal allowance for domestic travel?",
+    "expected_answer": "$75 per day",
+    "source_document": "expense_reimbursement.md",
+    "category": "factual"
+  },
+  {
+    "id": "expense-002",
+    "question": "What is the daily meal allowance for international travel?",
+    "expected_answer": "$100 per day",
+    "source_document": "expense_reimbursement.md",
+    "category": "factual"
+  },
+  {
+    "id": "expense-003",
+    "question": "What is the minimum receipt amount required for expense reimbursement?",
+    "expected_answer": "$25",
+    "source_document": "expense_reimbursement.md",
+    "category": "factual"
+  },
+  {
+    "id": "expense-004",
+    "question": "How many days do I have to submit an expense report after the expense?",
+    "expected_answer": "30 calendar days",
+    "source_document": "expense_reimbursement.md",
+    "category": "factual"
+  },
+  {
+    "id": "remote-001",
+    "question": "What are the core hours for remote employees?",
+    "expected_answer": "10:00 AM to 3:00 PM local time",
+    "source_document": "remote_work_policy.md",
+    "category": "factual"
+  },
+  {
+    "id": "remote-002",
+    "question": "What is the home office stipend amount?",
+    "expected_answer": "$500 one-time stipend",
+    "source_document": "remote_work_policy.md",
+    "category": "factual"
+  },
+  {
+    "id": "remote-003",
+    "question": "How often do fully remote employees need to come into the office?",
+    "expected_answer": "Once per quarter",
+    "source_document": "remote_work_policy.md",
+    "category": "factual"
+  },
+  {
+    "id": "security-001",
+    "question": "What is the minimum password length required?",
+    "expected_answer": "12 characters",
+    "source_document": "information_security.md",
+    "category": "factual"
+  },
+  {
+    "id": "security-002",
+    "question": "How quickly must I report a security incident?",
+    "expected_answer": "Within 2 hours",
+    "source_document": "information_security.md",
+    "category": "factual"
+  },
+  {
+    "id": "security-003",
+    "question": "What are the four data classification levels?",
+    "expected_answer": "Public, Internal, Confidential, Restricted",
+    "source_document": "information_security.md",
+    "category": "factual"
+  },
+  {
+    "id": "holidays-001",
+    "question": "How many federal holidays does Sunshine Consulting observe?",
+    "expected_answer": "11 federal holidays",
+    "source_document": "holidays_and_leave.md",
+    "category": "factual"
+  },
+  {
+    "id": "holidays-002",
+    "question": "How many days of bereavement leave do I get for an immediate family member?",
+    "expected_answer": "3 business days",
+    "source_document": "holidays_and_leave.md",
+    "category": "factual"
+  },
+  {
+    "id": "performance-001",
+    "question": "When is the annual performance review conducted?",
+    "expected_answer": "November-December, Q4",
+    "source_document": "performance_review.md",
+    "category": "factual"
+  },
+  {
+    "id": "performance-002",
+    "question": "What performance rating triggers a Performance Improvement Plan?",
+    "expected_answer": "Rating of 2 or below",
+    "source_document": "performance_review.md",
+    "category": "factual"
+  },
+  {
+    "id": "performance-003",
+    "question": "What is the maximum merit increase for an exceptional performance rating?",
+    "expected_answer": "8%",
+    "source_document": "performance_review.md",
+    "category": "factual"
+  },
+  {
+    "id": "onboarding-001",
+    "question": "How long is the probationary period for new employees?",
+    "expected_answer": "90 days",
+    "source_document": "onboarding_checklist.md",
+    "category": "factual"
+  },
+  {
+    "id": "onboarding-002",
+    "question": "How many days do new employees have to enroll in company benefits?",
+    "expected_answer": "30 days from start date",
+    "source_document": "onboarding_checklist.md",
+    "category": "factual"
+  },
+  {
+    "id": "travel-001",
+    "question": "How far in advance should business travel be booked?",
+    "expected_answer": "At least 14 days in advance",
+    "source_document": "travel_policy.md",
+    "category": "factual"
+  },
+  {
+    "id": "travel-002",
+    "question": "What is the hotel nightly limit for domestic travel?",
+    "expected_answer": "$200 per night",
+    "source_document": "travel_policy.md",
+    "category": "factual"
+  },
+  {
+    "id": "multihop-001",
+    "question": "Can I work remotely during my probationary period?",
+    "expected_answer": "No, remote work requires completing the 90-day probationary period",
+    "source_document": "remote_work_policy.md",
+    "category": "multi-hop"
+  },
+  {
+    "id": "unanswerable-001",
+    "question": "What is the company's stock option vesting schedule?",
+    "expected_answer": "I don't have enough information in the current policies to answer that.",
+    "source_document": null,
+    "category": "unanswerable"
+  },
+  {
+    "id": "unanswerable-002",
+    "question": "What is the office address of Sunshine Consulting headquarters?",
+    "expected_answer": "I don't have enough information in the current policies to answer that.",
+    "source_document": null,
+    "category": "unanswerable"
+  }
+]

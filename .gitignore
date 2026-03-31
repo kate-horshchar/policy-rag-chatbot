@@ -1,0 +1,13 @@
+_workspace/
+*.stackdump
+venv/
+.env
+chroma_db/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+evaluation/results/*.json
+*.egg-info/
+dist/
+.DS_Store
