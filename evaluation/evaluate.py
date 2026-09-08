@@ -2,8 +2,10 @@
 Evaluation script for the Policy RAG Chatbot.
 
 Metrics:
-- Groundedness %: answer is supported by retrieved chunks
+- Groundedness %: answer is supported by the retrieved chunks
 - Citation Accuracy %: correct source document is cited
+- Citation Validity %: every citation names a real document and a real section
+- Partial Match %: answer agrees with the short gold answer
 - Latency p50/p95: response time percentiles
 - Fallback Rate: unanswerable questions correctly refused
 
@@ -12,6 +14,8 @@ Usage:
 """
 
 import json
+import os
+import re
 import sys
 import time
 from pathlib import Path
@@ -22,11 +26,16 @@ import numpy as np  # noqa: E402
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 from src.pipeline import ask  # noqa: E402
+from src.retrieval import search  # noqa: E402
 
 QA_PAIRS_PATH = Path(__file__).parent / "qa_pairs.json"
+POLICIES_DIR = Path(__file__).parent.parent / "data" / "policies"
+CITATION_RE = re.compile(r"\[Source:([^\]]+)\]")
 RESULTS_DIR = Path(__file__).parent / "results"
 FALLBACK_PHRASE = "I don't have enough information in the current policies"
+API_ERROR_PHRASE = "unable to process your request"
 SLEEP_BETWEEN_REQUESTS = 1  # seconds — avoids Groq rate limits
+RETRIES = 2  # a transient Groq error should not be scored as a wrong answer
 
 
 def load_qa_pairs() -> list[dict]:
@@ -34,24 +43,94 @@ def load_qa_pairs() -> list[dict]:
         return json.load(f)
 
 
-def is_grounded(answer: str, sources: list[dict], expected: str) -> bool:
+def normalize(text: str) -> str:
     """
-    Check if key terms from the expected answer appear in the retrieved chunks.
+    Lowercase and flatten typographic variation so that string comparison is not
+    defeated by formatting: en/em dashes vs hyphens, markdown emphasis, and
+    punctuation the model may add around an otherwise correct answer.
     """
-    expected_lower = expected.lower()
-    # Extract key terms: numbers and words longer than 3 chars
-    key_terms = [
-        w
-        for w in expected_lower.split()
-        if len(w) > 3 or w.replace("$", "").replace("%", "").isdigit()
-    ]
+    text = text.lower()
+    text = re.sub(r"[‐-―]", "-", text)  # dash variants -> hyphen
+    text = text.replace("*", "").replace("_", "")  # markdown emphasis
+    text = re.sub(r"[^\w\s%$.-]", " ", text)
+    return re.sub(r"\s+", " ", text)
 
-    if not key_terms:
-        return False
 
-    all_chunk_text = " ".join(s.get("snippet", "").lower() for s in sources)
-    matched = sum(1 for term in key_terms if term in all_chunk_text)
-    return matched / len(key_terms) >= 0.5
+def key_terms(expected: str) -> list[str]:
+    """
+    Terms a correct answer is expected to contain: any token carrying a digit
+    (amounts, percentages, durations) plus words longer than three characters.
+    """
+    terms = []
+    for token in normalize(expected).replace("-", " ").split():
+        token = token.strip(".,")
+        if not token:
+            continue
+        if any(ch.isdigit() for ch in token) or len(token) > 3:
+            terms.append(token)
+    return terms
+
+
+def _term_coverage(terms: list[str], text: str) -> float:
+    if not terms:
+        return 0.0
+    haystack = normalize(text).replace("-", " ")
+    return sum(1 for t in terms if t in haystack) / len(terms)
+
+
+def is_grounded(chunks: list[dict], expected: str) -> bool:
+    """
+    Groundedness: is the expected answer actually supported by the evidence the
+    retriever returned? Scored against the full chunk text — not the truncated
+    snippet shown in the API response, which would hide evidence past 200 chars.
+    """
+    evidence = " ".join(c.get("text", "") for c in chunks)
+    return _term_coverage(key_terms(expected), evidence) >= 0.5
+
+
+def is_partial_match(answer: str, expected: str) -> bool:
+    """
+    Optional Exact/Partial Match metric: does the answer itself carry the
+    substance of the short gold answer?
+    """
+    return _term_coverage(key_terms(expected), answer) >= 0.5
+
+
+def load_document_headings() -> dict[str, set[str]]:
+    """Map each policy filename to the set of section headings it actually contains."""
+    headings = {}
+    for path in POLICIES_DIR.glob("*.md"):
+        found = set()
+        for line in path.read_text(encoding="utf-8").split("\n"):
+            if line.strip().startswith("##"):
+                found.add(re.sub(r"\s+", " ", line.lstrip("#").strip().lower()))
+        headings[path.name] = found
+    return headings
+
+
+def check_citations(answer: str, headings: dict[str, set[str]]) -> tuple[int, int]:
+    """
+    Citation validity: does every citation point somewhere real?
+
+    Unlike citation accuracy, this does not ask whether the *expected* document was
+    named — it checks that each document and section the model cites actually
+    exists, which is what catches an invented attribution.
+
+    Returns (valid, total).
+    """
+    valid = total = 0
+    for raw in CITATION_RE.findall(answer):
+        total += 1
+        doc, _, section = raw.partition("Section:")
+        doc = doc.strip().rstrip(",").strip()
+        section = re.sub(r"\s+", " ", section.strip().lower())
+
+        if doc not in headings:
+            continue
+        if section and section not in headings[doc]:
+            continue
+        valid += 1
+    return valid, total
 
 
 def is_citation_accurate(answer: str, expected_source: str) -> bool:
@@ -75,10 +154,16 @@ def run_evaluation():
     latencies = []
 
     grounded_count = 0
+    partial_match_count = 0
+    partial_match_total = 0
     citation_correct_count = 0
     citation_total = 0
     fallback_correct = 0
     fallback_total = 0
+    api_errors = 0
+    citations_valid = 0
+    citations_total = 0
+    headings = load_document_headings()
 
     print(f"Running evaluation on {len(qa_pairs)} questions...\n")
     print("-" * 60)
@@ -92,29 +177,53 @@ def run_evaluation():
 
         print(f"[{i:02d}/{len(qa_pairs)}] {qid}: {question[:60]}...")
 
-        result = ask(question)
-        answer = result.get("answer", "")
+        for attempt in range(RETRIES):
+            result = ask(question)
+            answer = result.get("answer", "")
+            if API_ERROR_PHRASE not in answer:
+                break
+            if attempt < RETRIES - 1:
+                print("         transient API error - retrying")
+                time.sleep(SLEEP_BETWEEN_REQUESTS * 3)
+
         sources = result.get("sources", [])
         latency_ms = result.get("latency_ms", 0)
         latencies.append(latency_ms)
 
-        # Groundedness
+        if API_ERROR_PHRASE in answer:
+            api_errors += 1
+
+        # Grounding is scored against the full retrieved chunks. Retrieval is
+        # deterministic, so this returns the same evidence the answer was built
+        # from, without truncating it to the API's 200-char snippets.
+        chunks = search(question) if category != "unanswerable" else []
+
         grounded = False
         if category == "unanswerable":
             grounded = is_fallback(answer)
         else:
-            grounded = is_grounded(answer, sources, expected)
+            grounded = is_grounded(chunks, expected)
 
         if grounded:
             grounded_count += 1
 
-        # Citation accuracy (only for factual/multi-hop)
+        # Partial match and citation accuracy (only for factual/multi-hop)
+        partial_ok = None
         citation_ok = None
         if category != "unanswerable":
+            partial_ok = is_partial_match(answer, expected)
+            partial_match_total += 1
+            if partial_ok:
+                partial_match_count += 1
+
             citation_ok = is_citation_accurate(answer, expected_source)
             citation_total += 1
             if citation_ok:
                 citation_correct_count += 1
+
+        valid, cited = check_citations(answer, headings)
+        citations_valid += valid
+        citations_total += cited
 
         # Fallback rate (only for unanswerable)
         if category == "unanswerable":
@@ -131,11 +240,12 @@ def run_evaluation():
             "sources": [s["source"] for s in sources],
             "latency_ms": latency_ms,
             "grounded": grounded,
+            "partial_match": partial_ok,
             "citation_accurate": citation_ok,
         }
         results.append(record)
 
-        status = "✓" if grounded else "✗"
+        status = "PASS" if grounded else "FAIL"
         src_list = [s["source"] for s in sources[:2]]
         print(f"         {status} grounded | {latency_ms}ms | sources: {src_list}")
 
@@ -147,8 +257,16 @@ def run_evaluation():
     # Calculate metrics
     total = len(qa_pairs)
     groundedness_pct = round(grounded_count / total * 100, 1)
+    partial_match_pct = (
+        round(partial_match_count / partial_match_total * 100, 1)
+        if partial_match_total
+        else 0
+    )
     citation_pct = (
         round(citation_correct_count / citation_total * 100, 1) if citation_total else 0
+    )
+    citation_validity_pct = (
+        round(citations_valid / citations_total * 100, 1) if citations_total else 0
     )
     fallback_rate = (
         round(fallback_correct / fallback_total * 100, 1) if fallback_total else 0
@@ -159,19 +277,29 @@ def run_evaluation():
     summary = {
         "timestamp": datetime.now().isoformat(),
         "total_questions": total,
+        "model": os.getenv("GROQ_MODEL", ""),
+        "embedding_model": os.getenv("EMBEDDING_MODEL", ""),
+        "top_k": os.getenv("TOP_K", ""),
         "metrics": {
             "groundedness_pct": groundedness_pct,
             "citation_accuracy_pct": citation_pct,
+            "citation_validity_pct": citation_validity_pct,
+            "partial_match_pct": partial_match_pct,
             "fallback_rate_pct": fallback_rate,
             "latency_p50_ms": p50,
             "latency_p95_ms": p95,
         },
         "counts": {
             "grounded": grounded_count,
+            "partial_match": partial_match_count,
+            "partial_match_total": partial_match_total,
             "citation_correct": citation_correct_count,
             "citation_total": citation_total,
+            "citations_valid": citations_valid,
+            "citations_total": citations_total,
             "fallback_correct": fallback_correct,
             "fallback_total": fallback_total,
+            "api_errors": api_errors,
         },
         "results": results,
     }
@@ -189,6 +317,10 @@ def run_evaluation():
     print(
         f"Citation Accuracy: {citation_pct}%  ({citation_correct_count}/{citation_total})"
     )
+    cites = f"{citations_valid}/{citations_total} citations resolve"
+    print(f"Citation Validity: {citation_validity_pct}%  ({cites})")
+    matched = f"{partial_match_count}/{partial_match_total}"
+    print(f"Partial Match:     {partial_match_pct}%  ({matched})")
     refused = f"{fallback_correct}/{fallback_total} unanswerable correctly refused"
     print(f"Fallback Rate:     {fallback_rate}%  ({refused})")
     print(f"Latency p50:       {p50}ms")

@@ -1,0 +1,468 @@
+{
+  "timestamp": "2026-09-07T19:03:40.479157",
+  "total_questions": 25,
+  "model": "openai/gpt-oss-20b",
+  "embedding_model": "BAAI/bge-small-en-v1.5",
+  "top_k": "5",
+  "metrics": {
+    "groundedness_pct": 100.0,
+    "citation_accuracy_pct": 100.0,
+    "citation_validity_pct": 100.0,
+    "partial_match_pct": 95.7,
+    "fallback_rate_pct": 100.0,
+    "latency_p50_ms": 3495,
+    "latency_p95_ms": 5761
+  },
+  "counts": {
+    "grounded": 25,
+    "partial_match": 22,
+    "partial_match_total": 23,
+    "citation_correct": 23,
+    "citation_total": 23,
+    "citations_valid": 28,
+    "citations_total": 28,
+    "fallback_correct": 2,
+    "fallback_total": 2,
+    "api_errors": 0
+  },
+  "results": [
+    {
+      "id": "pto-001",
+      "category": "factual",
+      "question": "How many days of PTO do I accrue per month?",
+      "expected": "1.5 days per month",
+      "answer": "You accrue **1.5 days of PTO per calendar month**.  \n[Source: pto_policy.md, Section: 3. PTO Accrual]",
+      "sources": [
+        "pto_policy.md",
+        "pto_policy.md",
+        "pto_policy.md",
+        "pto_policy.md",
+        "onboarding_checklist.md"
+      ],
+      "latency_ms": 3495,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "pto-002",
+      "category": "factual",
+      "question": "How many unused PTO days can I carry over to the next year?",
+      "expected": "10 days",
+      "answer": "Employees may carry over a maximum of **10 unused annual leave days** into the following calendar year.  \n[Source: pto_policy.md, Section: 4. PTO Carryover]",
+      "sources": [
+        "pto_policy.md",
+        "pto_policy.md",
+        "pto_policy.md",
+        "pto_policy.md",
+        "holidays_and_leave.md"
+      ],
+      "latency_ms": 431,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "pto-003",
+      "category": "factual",
+      "question": "How many sick leave days do I get per year?",
+      "expected": "10 days",
+      "answer": "You receive **10 sick leave days per year**.  \n[Source: pto_policy.md, Section: 2. Types of Leave]",
+      "sources": [
+        "pto_policy.md",
+        "pto_policy.md",
+        "pto_policy.md",
+        "pto_policy.md",
+        "holidays_and_leave.md"
+      ],
+      "latency_ms": 437,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "expense-001",
+      "category": "factual",
+      "question": "What is the daily meal allowance for domestic travel?",
+      "expected": "$75 per day",
+      "answer": "The daily meal allowance for domestic travel is **$75 per day**.  \n[Source: travel_policy.md, Section: 5. Ground Transportation]  \n[Source: expense_reimbursement.md, Section: 2.1 Meals and Dining]",
+      "sources": [
+        "travel_policy.md",
+        "expense_reimbursement.md",
+        "travel_policy.md",
+        "expense_reimbursement.md",
+        "travel_policy.md"
+      ],
+      "latency_ms": 661,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "expense-002",
+      "category": "factual",
+      "question": "What is the daily meal allowance for international travel?",
+      "expected": "$100 per day",
+      "answer": "The daily meal allowance for international travel is **$100 per day**.  \n[Source: expense_reimbursement.md, Section: 2.1 Meals and Dining]  \n[Source: travel_policy.md, Section: 6. Meals and Daily Allowance]",
+      "sources": [
+        "expense_reimbursement.md",
+        "travel_policy.md",
+        "travel_policy.md",
+        "expense_reimbursement.md",
+        "travel_policy.md"
+      ],
+      "latency_ms": 658,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "expense-003",
+      "category": "factual",
+      "question": "What is the minimum receipt amount required for expense reimbursement?",
+      "expected": "$25",
+      "answer": "The minimum expense amount that requires a receipt for reimbursement is **$25**.  \n[Source: expense_reimbursement.md, Section: 3. Receipt Requirements]",
+      "sources": [
+        "expense_reimbursement.md",
+        "expense_reimbursement.md",
+        "travel_policy.md",
+        "expense_reimbursement.md",
+        "travel_policy.md"
+      ],
+      "latency_ms": 379,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "expense-004",
+      "category": "factual",
+      "question": "How many days do I have to submit an expense report after the expense?",
+      "expected": "30 calendar days",
+      "answer": "You have **30 calendar days** to submit an expense report after the expense date.  \n[Source: expense_reimbursement.md, Section: 4. Submission Deadline]  \n[Source: travel_policy.md, Section: 9. Submitting Travel Expenses]",
+      "sources": [
+        "expense_reimbursement.md",
+        "travel_policy.md",
+        "expense_reimbursement.md",
+        "expense_reimbursement.md",
+        "code_of_conduct.md"
+      ],
+      "latency_ms": 621,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "remote-001",
+      "category": "factual",
+      "question": "What are the core hours for remote employees?",
+      "expected": "10:00 AM to 3:00 PM local time",
+      "answer": "Core hours for all employees, including remote workers, are **10:00 AM – 3:00 PM** in the employee’s local time zone. During this window, employees must be reachable via Slack and email within 30 minutes. [Source: remote_work_policy.md, Section: 4. Core Hours]",
+      "sources": [
+        "remote_work_policy.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md"
+      ],
+      "latency_ms": 626,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "remote-002",
+      "category": "factual",
+      "question": "What is the home office stipend amount?",
+      "expected": "$500 one-time stipend",
+      "answer": "The home office stipend is **$500**.  \n[Source: remote_work_policy.md, Section: 6. Home Office Stipend]",
+      "sources": [
+        "remote_work_policy.md",
+        "onboarding_checklist.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md"
+      ],
+      "latency_ms": 348,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "remote-003",
+      "category": "factual",
+      "question": "How often do fully remote employees need to come into the office?",
+      "expected": "Once per quarter",
+      "answer": "Fully remote employees are required to visit the office **quarterly** for in‑person meetings.  \n[Source: remote_work_policy.md, Section: 3. Remote Work Arrangements]",
+      "sources": [
+        "remote_work_policy.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md"
+      ],
+      "latency_ms": 856,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "security-001",
+      "category": "factual",
+      "question": "What is the minimum password length required?",
+      "expected": "12 characters",
+      "answer": "The minimum password length required is **12 characters**.  \n[Source: information_security.md, Section: 2. Password Requirements]",
+      "sources": [
+        "information_security.md",
+        "information_security.md",
+        "information_security.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md"
+      ],
+      "latency_ms": 536,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "security-002",
+      "category": "factual",
+      "question": "How quickly must I report a security incident?",
+      "expected": "Within 2 hours",
+      "answer": "You must report a security incident **within 2 hours** of discovery.  \n[Source: information_security.md, Section: 8. Incident Reporting]",
+      "sources": [
+        "information_security.md",
+        "information_security.md",
+        "information_security.md",
+        "code_of_conduct.md",
+        "acceptable_use_policy.md"
+      ],
+      "latency_ms": 438,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "security-003",
+      "category": "factual",
+      "question": "What are the four data classification levels?",
+      "expected": "Public, Internal, Confidential, Restricted",
+      "answer": "The four data classification levels are:\n\n- Public  \n- Internal  \n- Confidential  \n- Restricted  \n\n[Source: information_security.md, Section: 4. Data Classification]",
+      "sources": [
+        "information_security.md",
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md",
+        "information_security.md"
+      ],
+      "latency_ms": 4481,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "holidays-001",
+      "category": "factual",
+      "question": "How many federal holidays does Sunshine Consulting observe?",
+      "expected": "11 federal holidays",
+      "answer": "Sunshine Consulting observes **11 federal holidays** each year. [Source: holidays_and_leave.md, Section: 2. Federal Holidays]",
+      "sources": [
+        "holidays_and_leave.md",
+        "holidays_and_leave.md",
+        "holidays_and_leave.md",
+        "performance_review.md",
+        "pto_policy.md"
+      ],
+      "latency_ms": 5669,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "holidays-002",
+      "category": "factual",
+      "question": "How many days of bereavement leave do I get for an immediate family member?",
+      "expected": "3 business days",
+      "answer": "You are entitled to **3 business days** of paid bereavement leave for an immediate family member (spouse, child, parent, sibling).  \n[Source: holidays_and_leave.md, Section: 4. Bereavement Leave]",
+      "sources": [
+        "holidays_and_leave.md",
+        "pto_policy.md",
+        "holidays_and_leave.md",
+        "pto_policy.md",
+        "pto_policy.md"
+      ],
+      "latency_ms": 5763,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "performance-001",
+      "category": "factual",
+      "question": "When is the annual performance review conducted?",
+      "expected": "November-December, Q4",
+      "answer": "The annual performance review is conducted in **November–December** (Q4).  \n[Source: performance_review.md, Section: 2. Review Cycle]",
+      "sources": [
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md"
+      ],
+      "latency_ms": 4667,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "performance-002",
+      "category": "factual",
+      "question": "What performance rating triggers a Performance Improvement Plan?",
+      "expected": "Rating of 2 or below",
+      "answer": "A performance rating of **2 or below** triggers a Performance Improvement Plan (PIP).  \n[Source: performance_review.md, Section: 6. Performance Improvement Plan (PIP)]",
+      "sources": [
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md"
+      ],
+      "latency_ms": 5623,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "performance-003",
+      "category": "factual",
+      "question": "What is the maximum merit increase for an exceptional performance rating?",
+      "expected": "8%",
+      "answer": "The maximum merit increase for an exceptional performance rating (5) is **8%**.  \n[Source: performance_review.md, Section: 5. Merit Increases]",
+      "sources": [
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md",
+        "performance_review.md"
+      ],
+      "latency_ms": 5736,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "onboarding-001",
+      "category": "factual",
+      "question": "How long is the probationary period for new employees?",
+      "expected": "90 days",
+      "answer": "The probationary period for new employees is **90 days**.  \n[Source: onboarding_checklist.md, Section: 6. Probationary Period]",
+      "sources": [
+        "onboarding_checklist.md",
+        "onboarding_checklist.md",
+        "remote_work_policy.md",
+        "pto_policy.md",
+        "pto_policy.md"
+      ],
+      "latency_ms": 4501,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "onboarding-002",
+      "category": "factual",
+      "question": "How many days do new employees have to enroll in company benefits?",
+      "expected": "30 days from start date",
+      "answer": "New employees have a **30‑day window** from their start date to enroll in company benefits.  \n[Source: onboarding_checklist.md, Section: 7. Benefits Enrollment]",
+      "sources": [
+        "onboarding_checklist.md",
+        "onboarding_checklist.md",
+        "pto_policy.md",
+        "remote_work_policy.md",
+        "onboarding_checklist.md"
+      ],
+      "latency_ms": 8860,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "travel-001",
+      "category": "factual",
+      "question": "How far in advance should business travel be booked?",
+      "expected": "At least 14 days in advance",
+      "answer": "Business travel should be booked at least **14 days in advance** whenever possible. If you need to book within 14 days, you must obtain manager approval before booking.  \n[Source: travel_policy.md, Section: 2. Booking Travel]",
+      "sources": [
+        "expense_reimbursement.md",
+        "travel_policy.md",
+        "travel_policy.md",
+        "travel_policy.md",
+        "travel_policy.md"
+      ],
+      "latency_ms": 5757,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "travel-002",
+      "category": "factual",
+      "question": "What is the hotel nightly limit for domestic travel?",
+      "expected": "$200 per night",
+      "answer": "The hotel nightly limit for domestic travel is **$200 per night**.  \n[Source: expense_reimbursement.md, Section: 2.2 Accommodation]  \n[Source: travel_policy.md, Section: 4. Accommodation]",
+      "sources": [
+        "expense_reimbursement.md",
+        "travel_policy.md",
+        "expense_reimbursement.md",
+        "travel_policy.md",
+        "travel_policy.md"
+      ],
+      "latency_ms": 5706,
+      "grounded": true,
+      "partial_match": true,
+      "citation_accurate": true
+    },
+    {
+      "id": "multihop-001",
+      "category": "multi-hop",
+      "question": "Can I work remotely during my probationary period?",
+      "expected": "No, remote work requires completing the 90-day probationary period",
+      "answer": "No. New employees must work on‑site for the first 90 days of employment to complete onboarding and build team relationships.  \n[Source: remote_work_policy.md, Section: 2. Eligibility]  \n[Source: onboarding_checklist.md, Section: 5. 30 / 60 / 90 Day Milestones]",
+      "sources": [
+        "remote_work_policy.md",
+        "remote_work_policy.md",
+        "onboarding_checklist.md",
+        "remote_work_policy.md",
+        "remote_work_policy.md"
+      ],
+      "latency_ms": 4748,
+      "grounded": true,
+      "partial_match": false,
+      "citation_accurate": true
+    },
+    {
+      "id": "unanswerable-001",
+      "category": "unanswerable",
+      "question": "What is the company's stock option vesting schedule?",
+      "expected": "I don't have enough information in the current policies to answer that.",
+      "answer": "I don't have enough information in the current policies to answer that.  \nPlease contact People Operations at people@sunshineconsulting.com or via Slack #hr-help.",
+      "sources": [],
+      "latency_ms": 2587,
+      "grounded": true,
+      "partial_match": null,
+      "citation_accurate": null
+    },
+    {
+      "id": "unanswerable-002",
+      "category": "unanswerable",
+      "question": "What is the office address of Sunshine Consulting headquarters?",
+      "expected": "I don't have enough information in the current policies to answer that.",
+      "answer": "I don't have enough information in the current policies to answer that.  \nPlease contact People Operations at people@sunshineconsulting.com or via Slack #hr-help.",
+      "sources": [],
+      "latency_ms": 5560,
+      "grounded": true,
+      "partial_match": null,
+      "citation_accurate": null
+    }
+  ]
+}
