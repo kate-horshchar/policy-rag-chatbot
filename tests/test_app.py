@@ -55,6 +55,14 @@ def test_policy_document_served(client):
     assert b"PTO" in response.data
 
 
+def test_policy_document_is_rendered(client):
+    response = client.get("/policies/pto_policy.md")
+    body = response.get_data(as_text=True)
+    assert "text/html" in response.headers["Content-Type"]
+    assert "<h2>" in body and "<table>" in body
+    assert "## " not in body
+
+
 def test_policy_document_unknown(client):
     response = client.get("/policies/does_not_exist.md")
     assert response.status_code == 404

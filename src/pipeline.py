@@ -1,4 +1,5 @@
 import os
+import re
 import time
 
 from groq import Groq
@@ -18,7 +19,53 @@ load_dotenv()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
 GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 
+SNIPPET_LENGTH = 200
+
 _client = None
+
+
+def build_snippet(text: str, length: int = SNIPPET_LENGTH) -> str:
+    """
+    Flatten a chunk into a readable one-line preview.
+
+    Chunks are raw markdown and often start mid-table, so the markup is stripped
+    rather than rendered: a truncated fragment cannot produce valid markup.
+    """
+    lines, heading_at = [], None
+    for line in text.split("\n"):
+        line = line.strip()
+        if not line or re.fullmatch(r"[|\s:-]+", line):
+            continue
+        if line.startswith("#") and heading_at is None:
+            heading_at = len(lines)
+        if "|" in line:
+            cells = [c.strip() for c in line.split("|") if c.strip()]
+            line = " · ".join(cells)
+        line = line.lstrip("#").strip()
+        line = re.sub(r"^([-*+]|\d+\.)\s+", "", line)
+        lines.append(line)
+
+    # Chunks are cut at a fixed size, so they routinely open mid-word. Starting at
+    # the chunk's own heading gives a preview that reads from a real boundary.
+    truncated_start = False
+    if heading_at and len(" ".join(lines[heading_at:])) >= length // 2:
+        lines, truncated_start = lines[heading_at:], True
+    else:
+        heading_at = None
+
+    flat = re.sub(r"\s+", " ", " ".join(lines))
+    flat = re.sub(r"\*\*(.+?)\*\*|\*(.+?)\*|`(.+?)`", r"\1\2\3", flat)
+    flat = re.sub(r"[*`]", "", flat)
+
+    if heading_at is None:
+        cleaned = re.sub(r"^[^\w(]+|^\S*?[a-z]\s+(?=[a-z])", "", flat).strip()
+        truncated_start = cleaned != flat
+        flat = cleaned
+
+    prefix = "..." if truncated_start else ""
+    if len(flat) > length:
+        return prefix + flat[:length].rstrip() + "..."
+    return prefix + flat
 
 
 def get_groq_client() -> Groq:
@@ -100,11 +147,7 @@ def ask(question: str) -> dict:
             "source": chunk["source"],
             "section_title": chunk["section_title"],
             "url": f"/policies/{chunk['source']}",
-            "snippet": (
-                chunk["text"][:200] + "..."
-                if len(chunk["text"]) > 200
-                else chunk["text"]
-            ),
+            "snippet": build_snippet(chunk["text"]),
         }
         for chunk in chunks
     ]
