@@ -6,7 +6,6 @@ from src.ingestion import get_embedding_model, get_chroma_collection
 load_dotenv()
 
 TOP_K = int(os.getenv("TOP_K", 5))
-MMR_LAMBDA = float(os.getenv("MMR_LAMBDA", 0.7))
 
 BGE_QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
 

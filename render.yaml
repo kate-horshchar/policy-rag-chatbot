@@ -9,7 +9,7 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: GROQ_MODEL
-        value: llama-3.1-8b-instant
+        value: openai/gpt-oss-20b
       - key: EMBEDDING_MODEL
         value: all-MiniLM-L6-v2
       - key: EMBEDDING_DEVICE
@@ -20,10 +20,6 @@ services:
         value: company_policies
       - key: TOP_K
         value: "5"
-      - key: MMR_LAMBDA
-        value: "0.7"
-      - key: RERANK_ENABLED
-        value: "false"
       - key: FLASK_SECRET_KEY
         sync: false
       - key: MAX_QUERY_LENGTH

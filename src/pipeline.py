@@ -6,12 +6,17 @@ from dotenv import load_dotenv
 
 from src.retrieval import search
 from src.prompts import SYSTEM_PROMPT, build_rag_prompt
-from src.guardrails import validate_input, validate_output, GuardrailError
+from src.guardrails import (
+    validate_input,
+    validate_output,
+    GuardrailError,
+    FALLBACK_PHRASE,
+)
 
 load_dotenv()
 
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-GROQ_MODEL = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+GROQ_MODEL = os.getenv("GROQ_MODEL", "openai/gpt-oss-20b")
 
 _client = None
 
@@ -66,9 +71,14 @@ def ask(question: str) -> dict:
                 {"role": "user", "content": user_message},
             ],
             max_tokens=1024,
-            temperature=0.1,
+            temperature=0,
+            # Reasoning tokens count against max_tokens and, left unbounded, can
+            # consume the whole budget and return empty content.
+            extra_body={"reasoning_effort": "low"},
         )
-        answer = response.choices[0].message.content.strip()
+        answer = (response.choices[0].message.content or "").strip()
+        if not answer:
+            raise ValueError("model returned an empty answer")
     except Exception as e:
         return {
             "answer": "Sorry, I was unable to process your request. Please try again later.",
@@ -80,11 +90,16 @@ def ask(question: str) -> dict:
     # Step 5: Validate output
     answer = validate_output(answer, chunks)
 
-    # Step 6: Format sources for response
+    # Step 6: Format sources for response. A refusal has no sources — retrieval
+    # still returns the nearest chunks, but none of them support an answer.
+    if FALLBACK_PHRASE in answer:
+        chunks = []
+
     sources = [
         {
             "source": chunk["source"],
             "section_title": chunk["section_title"],
+            "url": f"/policies/{chunk['source']}",
             "snippet": (
                 chunk["text"][:200] + "..."
                 if len(chunk["text"]) > 200
