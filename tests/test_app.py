@@ -47,3 +47,19 @@ def test_chat_empty_question(client):
 def test_chat_no_body(client):
     response = client.post("/chat", content_type="application/json", data="")
     assert response.status_code == 400
+
+
+def test_policy_document_served(client):
+    response = client.get("/policies/pto_policy.md")
+    assert response.status_code == 200
+    assert b"PTO" in response.data
+
+
+def test_policy_document_unknown(client):
+    response = client.get("/policies/does_not_exist.md")
+    assert response.status_code == 404
+
+
+def test_policy_document_rejects_traversal(client):
+    response = client.get("/policies/..%2F..%2F.env")
+    assert response.status_code == 404

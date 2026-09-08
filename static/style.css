@@ -122,8 +122,20 @@ header .subtitle {
     color: #555;
 }
 
-.source-item strong {
+.citation {
+    color: #b07400;
+    font-size: 0.85em;
+}
+
+.source-link {
     color: #333;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid #f8a000;
+}
+
+.source-link:hover {
+    color: #e09000;
 }
 
 .snippet {
